@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package order;
+
+service OrderService {
+  rpc PlaceOrder (OrderRequest) returns (OrderResponse);
+  rpc RefundOrder (RefundRequest) returns (OrderResponse);
+}
+
+message OrderRequest {
+  string id = 1;
+  string item_id = 2;
+  int32 quantity = 3;
+}
+
+message OrderResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message RefundRequest {
+  string id = 1;
+}

@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+grpcio
+grpcio-tools
+strawberry-graphql
+requests
+temporalio
+aio-pika
+confluent-kafka
+sqlalchemy
+alembic
+psycopg2-binary
+aiokafka
+python-multipart

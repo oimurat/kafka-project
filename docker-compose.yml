@@ -1,0 +1,270 @@
+services:
+  # --------------------------------------------------------
+  # GraphQLサービス（外部との通信インターフェース）
+  # --------------------------------------------------------
+  graphql-service:
+    build:
+      context: .
+      dockerfile: services/graphql-service/Dockerfile
+    container_name: graphql-service
+    ports:
+      - "8000:8000"  # ホストの8000番ポート → コンテナの8000番ポートに接続
+    # 以下のvolumeは必要に応じて有効化してください
+    # volumes:
+    #   - ./services/graphql-service/app:/app
+    #   - graphql-data:/app/generated
+    restart: unless-stopped
+
+  # --------------------------------------------------------
+  # 共通データベース（PostgreSQL）
+  # CRUD操作で使用
+  # --------------------------------------------------------
+  microservice-db:
+    image: postgres:17.4
+    container_name: microservice-db
+    environment:
+      POSTGRES_USER: appuser        # DBのユーザー名
+      POSTGRES_PASSWORD: apppass    # DBのパスワード
+      POSTGRES_DB: appdb            # 作成するデータベース名
+    ports:
+      - "5432:5432"  # PostgreSQLの標準ポート
+    volumes:
+      - microservice-db-data:/var/lib/postgresql/data  # データ永続化
+    restart: unless-stopped
+
+  # --------------------------------------------------------
+  # カートのマイクロサービス（gRPC）
+  # --------------------------------------------------------
+  grpc-cart-service:
+    build:
+      context: .
+      dockerfile: services/grpc-cart-service/Dockerfile
+    container_name: grpc-cart-service
+    ports:
+      - "50051:50051"  # gRPC通信用ポート
+    # volumes:
+    #   - ./services/grpc-cart-service/app:/app
+    #   - grpc-cart-data:/app/generated
+    restart: unless-stopped
+
+  # --------------------------------------------------------
+  # 商品情報のマイクロサービス（gRPC）
+  # --------------------------------------------------------
+  grpc-product-service:
+    build:
+      context: .
+      dockerfile: services/grpc-product-service/Dockerfile
+    container_name: grpc-product-service
+    ports:
+      - "50052:50052"
+    # volumes:
+    #   - ./services/grpc-product-service/app:/app
+    #   - grpc-product-data:/app/generated
+    restart: unless-stopped
+
+  # --------------------------------------------------------
+  # 注文のマイクロサービス（gRPC）
+  # --------------------------------------------------------
+  grpc-order-service:
+    build:
+      context: .
+      dockerfile: services/grpc-order-service/Dockerfile
+    container_name: grpc-order-service
+    ports:
+      - "50053:50053"
+    # volumes:
+    #   - ./services/grpc-order-service/app:/app
+    #   - grpc-order-data:/app/generated
+    restart: unless-stopped
+
+  # --------------------------------------------------------
+  # 決済のマイクロサービス（gRPC）
+  # --------------------------------------------------------
+  grpc-payment-service:
+    build:
+      context: .
+      dockerfile: services/grpc-payment-service/Dockerfile
+    container_name: grpc-payment-service
+    ports:
+      - "50054:50054"
+    # volumes:
+    #   - ./services/grpc-payment-service/app:/app
+    #   - grpc-payment-data:/app/generated
+    restart: unless-stopped
+
+  # --------------------------------------------------------
+  # ワークフローサービス（Temporalを使った処理管理）
+  # --------------------------------------------------------
+  workflow-service:
+    build:
+      context: .
+      dockerfile: services/workflow-service/Dockerfile
+    container_name: workflow-service
+    depends_on:
+      - temporal
+      - grpc-order-service
+      - grpc-payment-service
+    ports:
+      - "50060:50060"
+    # volumes:
+    #   - ./services/workflow-service/app:/app
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233  # Temporalサーバのアドレス
+    restart: unless-stopped
+
+  # workflow-service-2:
+  #   build:
+  #     context: .
+  #     dockerfile: services/workflow-service/Dockerfile
+  #   container_name: workflow-service-2
+  #   depends_on:
+  #     - temporal
+  #     - grpc-order-service
+  #     - grpc-payment-service
+  #   ports:
+  #     - "50060:50060"
+  #   # volumes:
+  #   #   - ./services/workflow-service/app:/app
+  #   environment:
+  #     TEMPORAL_ADDRESS: temporal:7233  # Temporalサーバのアドレス
+  #   restart: unless-stopped
+
+  # --------------------------------------------------------
+  # Temporal用データベース（PostgreSQL）
+  # --------------------------------------------------------
+  temporal-db:
+    image: postgres:17.4
+    container_name: temporal-db
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+    volumes:
+      - temporal-pgdata:/var/lib/postgresql/data
+
+  # --------------------------------------------------------
+  # Temporalサーバ（ワークフローエンジン）
+  # --------------------------------------------------------
+  temporal:
+    image: temporalio/auto-setup:1.27.2
+    container_name: temporal
+    ports:
+      - "7233:7233"  # Temporalのメインポート
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: temporal
+      POSTGRES_SEEDS: temporal-db
+    depends_on:
+      - temporal-db
+    restart: unless-stopped
+
+  # --------------------------------------------------------
+  # TemporalのWeb UI
+  # --------------------------------------------------------
+  temporal-ui:
+    image: temporalio/ui:2.36.1
+    container_name: temporal-ui
+    ports:
+      - "8088:8080"  # Web UI用ポート
+    depends_on:
+      - temporal
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+
+  # --------------------------------------------------------
+  # RabbitMQ（メッセージング用）+ 管理画面
+  # --------------------------------------------------------
+  rabbitmq:
+    image: rabbitmq:4.1.0-beta.5-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"     # 通信ポート（AMQP）
+      - "15672:15672"   # 管理画面ポート
+    environment:
+      RABBITMQ_DEFAULT_USER: user
+      RABBITMQ_DEFAULT_PASS: pass
+
+  # --------------------------------------------------------
+  # Zookeeper（Kafkaの管理用サービス）
+  # --------------------------------------------------------
+  zookeeper:
+    image: zookeeper:3.6
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+    ports:
+      - "2181:2181"
+
+  # --------------------------------------------------------
+  # Kafka（メッセージングサービス）
+  # --------------------------------------------------------
+  kafka:
+    image: confluentinc/cp-kafka:6.2.0
+    environment:
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+      - KAFKA_LISTENER_SECURITY_PROTOCOL=PLAINTEXT
+      - KAFKA_LISTENER_NAME=PLAINTEXT
+      - KAFKA_LISTENER_PORT=9092
+      - KAFKA_LISTENER_INTER_BROKER_PROTOCOL=PLAINTEXT
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_LISTENER_NAMES=PLAINTEXT
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=2
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+
+  # --------------------------------------------------------
+  # Kafka UI（WebでKafkaの中身を確認）
+  # --------------------------------------------------------
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8081:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    depends_on:
+      - kafka
+    restart: unless-stopped
+
+  # --------------------------------------------------------
+  # Kafkaワーカー（Kafkaからメッセージを取得）
+  # --------------------------------------------------------
+  kafka-worker:
+    build:
+      context: .
+      dockerfile: services/kafka-worker/Dockerfile
+    depends_on:
+      - kafka
+      - grpc-product-service
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    deploy:
+      replicas: 2   # スケールアウト指定
+    restart: always
+
+  # --------------------------------------------------------
+  # Kafka API（FastAPIでKafkaにメッセージを送信）
+  # --------------------------------------------------------
+  kafka-api:
+    build:
+      context: .
+      dockerfile: services/kafka-api/Dockerfile
+    container_name: kafka-api
+    ports:
+      - "8001:8001"
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - APP_PORT=8001
+    depends_on:
+      - kafka
+    restart: unless-stopped
+
+# --------------------------------------------------------
+# ボリューム定義（データの永続化用）
+# --------------------------------------------------------
+volumes:
+  microservice-db-data:    # アプリ用PostgreSQLデータ
+  temporal-pgdata:         # Temporal用PostgreSQLデータ

@@ -1,0 +1,38 @@
+# 商品情報の型定義
+type Product {
+  id: String         # 商品ID（ユニーク）
+  name: String       # 商品名
+  price: Float       # 価格（例：1999.99）
+  description: String # 商品の説明文
+}
+
+# カート情報の型定義
+type Cart {
+  id: String          # カートID
+  productId: String   # 商品ID（Productと紐づく）
+  quantity: Int       # 商品の数量
+}
+
+# データ取得系のクエリ（読み取り操作）
+type Query {
+  product(id: String!): Product # 特定の商品をIDで取得（!は必須引数）
+  cart(id: String!): Cart       # 特定のカートをIDで取得
+}
+
+# データ操作系のミューテーション（書き込み/アクション操作）
+type Mutation {
+  # カートに商品を追加する
+  createCart(id: String!, productId: String!, quantity: Int!): String
+
+  # 注文を確定する（カート→注文）
+  placeOrder(id: String!, itemId: String!, quantity: Int!): String
+
+  # 注文を返金する
+  refundOrder(orderId: String!): String
+
+  # 注文の支払いを行う
+  payOrder(orderId: String!, amount: Int!): String
+
+  # 注文処理のワークフローを実行（例：在庫確認、発送準備など）
+  workflowOrder(orderId: String!, itemId: String!): String
+}
