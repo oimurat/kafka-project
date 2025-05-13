@@ -1,0 +1,15 @@
+# 追加
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: temporal-db
+  name: temporal-db
+  namespace: microservices
+spec:
+  selector:
+    io.kompose.service: temporal-db
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: 5432

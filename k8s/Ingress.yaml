@@ -1,0 +1,138 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: graphql-ingress
+  namespace: microservices
+  annotations:
+    oci-native-ingress.oraclecloud.com/healthcheck-protocol: "HTTP"
+    oci-native-ingress.oraclecloud.com/healthcheck-port: "80"
+    oci-native-ingress.oraclecloud.com/healthcheck-path: "/ui"
+spec:
+    ingressClassName: native-ic-ingress-class
+    rules:
+    - http:
+        paths:
+        - path: /ui
+          pathType: Prefix
+          backend:
+            service:
+              name: graphql-service
+              port:
+                number: 80
+        - path: /graphql
+          pathType: Prefix
+          backend:
+            service:
+              name: graphql-service
+              port:
+                number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rabbitmq-ingress
+  namespace: microservices
+  annotations:
+    oci-native-ingress.oraclecloud.com/healthcheck-protocol: "HTTP"
+    oci-native-ingress.oraclecloud.com/healthcheck-port: "15672"
+    oci-native-ingress.oraclecloud.com/healthcheck-path: "/"
+spec:
+    ingressClassName: native-ic-ingress-class
+    rules:
+    - http:
+        paths:
+        - path: /rabbitmq
+          pathType: Prefix
+          backend:
+            service:
+              name: rabbitmq
+              port:
+                number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: temporal-ingress
+  namespace: microservices
+  annotations:
+    oci-native-ingress.oraclecloud.com/healthcheck-protocol: "HTTP"
+    oci-native-ingress.oraclecloud.com/healthcheck-port: "8080"
+    oci-native-ingress.oraclecloud.com/healthcheck-path: "/temporal/"
+spec:
+    ingressClassName: native-ic-ingress-class
+    rules:
+    - http:
+        paths:
+        - path: /temporal
+          pathType: Prefix
+          backend:
+            service:
+              name: temporal-ui
+              port:
+                number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argocd
+  annotations:
+    oci-native-ingress.oraclecloud.com/healthcheck-protocol: "HTTP"
+    oci-native-ingress.oraclecloud.com/healthcheck-port: "8080"
+    oci-native-ingress.oraclecloud.com/healthcheck-path: "/argocd/"
+spec:
+    ingressClassName: native-ic-ingress-class
+    rules:
+    - http:
+        paths:
+        - path: /argocd
+          pathType: Prefix
+          backend:
+            service:
+              name: argocd-server
+              port:
+                number: 80
+---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: argo-workflows-ingress
+#   namespace: argo
+#   annotations:
+#     oci-native-ingress.oraclecloud.com/healthcheck-protocol: "HTTP"
+#     oci-native-ingress.oraclecloud.com/healthcheck-port: "2746"
+#     oci-native-ingress.oraclecloud.com/healthcheck-path: "/"
+# spec:
+#     ingressClassName: native-ic-ingress-class
+#     rules:
+#     - http:
+#         paths:
+#         - path: /
+#           pathType: Prefix
+#           backend:
+#             service:
+#               name: argo-workflows-server
+#               port:
+#                 number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kafka-ingress
+  namespace: microservices
+  annotations:
+    oci-native-ingress.oraclecloud.com/healthcheck-protocol: "HTTP"
+    oci-native-ingress.oraclecloud.com/healthcheck-port: "8080"
+    oci-native-ingress.oraclecloud.com/healthcheck-path: "/"
+spec:
+    ingressClassName: native-ic-ingress-class
+    rules:
+    - http:
+        paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: kafka-ui
+              port:
+                number: 80
