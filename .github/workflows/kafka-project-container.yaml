@@ -15,101 +15,6 @@ env:
     OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
 
 jobs:
-    graphql-service-build-and-push:
-        name: graphql-service Build & Push
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout repository # リポジトリをチェックアウト
-              uses: actions/checkout@v4
-
-            - name: Docker build # Docker イメージをビルド
-              run: docker build -f services/graphql-service/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:graphql-service .
-
-            - name: Login OCIR # OCIR にログイン
-              uses: oracle-actions/login-ocir@v1.3.0
-              with:
-                  auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
-
-            - name: Push container image # コンテナイメージを OCIR にプッシュ
-              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:graphql-service
-
-    grpc-cart-service-build-and-push:
-        name: grpc-cart-service Build & Push
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout repository # リポジトリをチェックアウト
-              uses: actions/checkout@v4
-
-            - name: Docker build # Docker イメージをビルド
-              run: docker build -f services/grpc-cart-service/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:grpc-cart-service .
-
-            - name: Login OCIR # OCIR にログイン
-              uses: oracle-actions/login-ocir@v1.3.0
-              with:
-                  auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
-
-            - name: Push container image # コンテナイメージを OCIR にプッシュ
-              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:grpc-cart-service
-
-    grpc-order-service-build-and-push:
-        name: grpc-order-service Build & Push
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout repository # リポジトリをチェックアウト
-              uses: actions/checkout@v4
-
-            - name: Docker build # Docker イメージをビルド
-              run: docker build -f services/grpc-order-service/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:grpc-order-service .
-
-            - name: Login OCIR # OCIR にログイン
-              uses: oracle-actions/login-ocir@v1.3.0
-              with:
-                  auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
-
-            - name: Push container image # コンテナイメージを OCIR にプッシュ
-              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:grpc-order-service
-
-    grpc-payment-service-build-and-push:
-        name: grpc-payment-service Build & Push
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout repository # リポジトリをチェックアウト
-              uses: actions/checkout@v4
-
-            - name: Docker build # Docker イメージをビルド
-              run: docker build -f services/grpc-payment-service/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:grpc-payment-service .
-
-            - name: Login OCIR # OCIR にログイン
-              uses: oracle-actions/login-ocir@v1.3.0
-              with:
-                  auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
-
-            - name: Push container image # コンテナイメージを OCIR にプッシュ
-              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:grpc-payment-service
-
-    grpc-product-service-build-and-push:
-        name: grpc-product-service Build & Push
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout repository # リポジトリをチェックアウト
-              uses: actions/checkout@v4
-
-            - name: Docker build # Docker イメージをビルド
-              run: docker build -f services/grpc-product-service/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:grpc-product-service .
-
-            - name: Login OCIR # OCIR にログイン
-              uses: oracle-actions/login-ocir@v1.3.0
-              with:
-                  auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
-
-            - name: Push container image # コンテナイメージを OCIR にプッシュ
-              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:grpc-product-service
-
     kafka-api-build-and-push:
         name: kafka-api Build & Push
         runs-on: ubuntu-latest
@@ -129,40 +34,21 @@ jobs:
             - name: Push container image # コンテナイメージを OCIR にプッシュ
               run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-api
 
-    kafka-worker-build-and-push:
-        name: kafka-worker Build & Push
-        runs-on: ubuntu-latest
+    # kafka-worker-build-and-push:
+    #     name: kafka-worker Build & Push
+    #     runs-on: ubuntu-latest
 
-        steps:
-            - name: Checkout repository # リポジトリをチェックアウト
-              uses: actions/checkout@v4
+    #     steps:
+    #         - name: Checkout repository # リポジトリをチェックアウト
+    #           uses: actions/checkout@v4
 
-            - name: Docker build # Docker イメージをビルド
-              run: docker build -f services/kafka-worker/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-worker .
+    #         - name: Docker build # Docker イメージをビルド
+    #           run: docker build -f services/kafka-worker/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-worker .
 
-            - name: Login OCIR # OCIR にログイン
-              uses: oracle-actions/login-ocir@v1.3.0
-              with:
-                  auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
+    #         - name: Login OCIR # OCIR にログイン
+    #           uses: oracle-actions/login-ocir@v1.3.0
+    #           with:
+    #               auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
 
-            - name: Push container image # コンテナイメージを OCIR にプッシュ
-              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-worker
-
-    workflow-service-build-and-push:
-        name: workflow-service Build & Push
-        runs-on: ubuntu-latest
-
-        steps:
-            - name: Checkout repository # リポジトリをチェックアウト
-              uses: actions/checkout@v4
-
-            - name: Docker build # Docker イメージをビルド
-              run: docker build -f services/workflow-service/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:workflow-service .
-
-            - name: Login OCIR # OCIR にログイン
-              uses: oracle-actions/login-ocir@v1.3.0
-              with:
-                  auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
-
-            - name: Push container image # コンテナイメージを OCIR にプッシュ
-              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:workflow-service
+    #         - name: Push container image # コンテナイメージを OCIR にプッシュ
+    #           run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-worker
