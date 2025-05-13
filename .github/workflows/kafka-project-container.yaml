@@ -24,7 +24,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Docker build # Docker イメージをビルド
-              run: docker build -f services/kafka-api/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-api .
+              run: docker build --no-cache -f services/kafka-api/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-api .
 
             - name: Login OCIR # OCIR にログイン
               uses: oracle-actions/login-ocir@v1.3.0
