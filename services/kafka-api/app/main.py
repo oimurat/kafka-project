@@ -1,7 +1,7 @@
 import asyncio
 import json
 import os
-from typing import Dict
+from typing import Dict, List
 
 from fastapi import FastAPI
 from aiokafka import AIOKafkaProducer
@@ -49,32 +49,33 @@ async def shutdown_event():
     log.info("Kafka Producer stopped.")
 
 # -----------------------------
-# エンドポイント
+# エンドポイント（複数対応）
 # -----------------------------
 
 @app.post("/update_product/")
-async def update_product(product: Dict):
+async def update_products(products: List[Dict]):
     """
-    Kafkaに商品情報を送信するエンドポイント
+    Kafkaに複数の商品情報を送信するエンドポイント
     """
     global producer
 
-    log.info(f"📤 Sending message to Kafka: {product}")
-
-    try:
+    results = []
+    for product in products:
+        log.info(f"📤 Sending message to Kafka: {product}")
         message = {
             "type": "update_product",
             "payload": product
         }
         value_json = json.dumps(message).encode("utf-8")
+        try:
+            await producer.send_and_wait(KAFKA_TOPIC, value_json)
+            log.info(f"✅ Sent product {product.get('id')} to Kafka")
+            results.append({"status": "success", "id": product.get("id")})
+        except Exception as e:
+            log.error(f"❌ Failed to send product {product.get('id')}: {e}")
+            results.append({"status": "error", "id": product.get("id"), "error": str(e)})
 
-        await producer.send_and_wait(KAFKA_TOPIC, value_json)
-
-        log.info("Message sent to Kafka successfully.")
-        return {"status": "success", "data": product}
-    except Exception as e:
-        log.error(f"❌ Failed to send message: {e}")
-        return {"status": "error", "detail": str(e)}
+    return {"message": f"{len(results)} products processed.", "results": results}
 
 # -----------------------------
 # ローカル実行用
