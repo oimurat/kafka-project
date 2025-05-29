@@ -41,7 +41,7 @@ spec:
     rules:
     - http:
         paths:
-        - path: /rabbitmq
+        - path: /
           pathType: Prefix
           backend:
             service:
@@ -57,13 +57,13 @@ metadata:
   annotations:
     oci-native-ingress.oraclecloud.com/healthcheck-protocol: "HTTP"
     oci-native-ingress.oraclecloud.com/healthcheck-port: "8080"
-    oci-native-ingress.oraclecloud.com/healthcheck-path: "/temporal/"
+    oci-native-ingress.oraclecloud.com/healthcheck-path: "/"
 spec:
     ingressClassName: native-ic-ingress-class
     rules:
     - http:
         paths:
-        - path: /temporal
+        - path: /
           pathType: Prefix
           backend:
             service:
