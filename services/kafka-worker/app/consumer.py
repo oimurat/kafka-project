@@ -16,7 +16,7 @@ log = logging.getLogger("kafka-worker")
 
 # 環境変数の読み込み（なければデフォルト値を使用）
 KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "product-updates")
-KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka:9092")
+KAFKA_BOOTSTRAP_SERVERS = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "kafka-service:9092")
 KAFKA_CONSUMER_GROUP = os.getenv("KAFKA_CONSUMER_GROUP", "product-consumer-group")
 
 # gRPC で ProductService に接続（ホスト名はサービス名に対応）
