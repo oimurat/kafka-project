@@ -24,7 +24,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Docker build # Docker イメージをビルド
-              run: docker build --no-cache -f services/kafka-api/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-api-v4 .
+              run: docker build --no-cache -f services/kafka-api/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-api-v5 .
 
             - name: Login OCIR # OCIR にログイン
               uses: oracle-actions/login-ocir@v1.3.0
@@ -32,4 +32,4 @@ jobs:
                   auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
 
             - name: Push container image # コンテナイメージを OCIR にプッシュ
-              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-api-v4
+              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:kafka-api-v5

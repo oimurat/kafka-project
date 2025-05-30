@@ -78,12 +78,6 @@ async def update_products(products: List[Dict]):
     return {"message": f"{len(results)} products processed.", "results": results}
 
 # -----------------------------
-# ローカル実行用
-# -----------------------------
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8001)
-
-# -----------------------------
 # ヘルスチェック用エンドポイント
 # -----------------------------
 @app.get("/") # ヘルスチェック用エンドポイントを追加
@@ -93,3 +87,9 @@ async def health_check():
     ルートへのGETリクエストに対し、ステータスコード200と{"status": "ok"}を返す
     """
     return {"status": "ok"}
+
+# -----------------------------
+# ローカル実行用
+# -----------------------------
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8001)
