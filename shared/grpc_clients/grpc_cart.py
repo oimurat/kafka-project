@@ -2,7 +2,7 @@ import grpc
 import cart_pb2
 import cart_pb2_grpc
 
-channel = grpc.insecure_channel("grpc-cart-service:50051")
+channel = grpc.insecure_channel("grpc-cart-service.microservices-b:50051")
 stub = cart_pb2_grpc.CartServiceStub(channel)
 
 def get_cart_by_id(id: str, fields: list[str]):
