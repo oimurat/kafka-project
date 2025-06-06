@@ -24,7 +24,7 @@ jobs:
               uses: actions/checkout@v4
 
             - name: Docker build # Docker イメージをビルド
-              run: docker build -f services/graphql-service/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:graphql-service-v2 .
+              run: docker build -f services/graphql-service/Dockerfile -t nrt.ocir.io/nrcmxxv7sjse/ec_service_test:graphql-service-v3 .
 
             - name: Login OCIR # OCIR にログイン
               uses: oracle-actions/login-ocir@v1.3.0
@@ -32,4 +32,4 @@ jobs:
                   auth_token: ${{ secrets.OCI_AUTH_TOKEN }}
 
             - name: Push container image # コンテナイメージを OCIR にプッシュ
-              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:graphql-service-v2
+              run: docker push nrt.ocir.io/nrcmxxv7sjse/ec_service_test:graphql-service-v3
