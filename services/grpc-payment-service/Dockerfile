@@ -17,4 +17,3 @@ RUN python -m grpc_tools.protoc \
     /shared/proto/payment.proto
 
 CMD ["python", "main.py"]
-
