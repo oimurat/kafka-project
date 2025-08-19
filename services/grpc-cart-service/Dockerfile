@@ -17,3 +17,8 @@ RUN python -m grpc_tools.protoc \
     /shared/proto/cart.proto
 
 CMD ["python", "main.py"]
+
+
+
+
+
