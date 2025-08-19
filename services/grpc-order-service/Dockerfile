@@ -17,3 +17,6 @@ RUN python -m grpc_tools.protoc \
     /shared/proto/order.proto
 
 CMD ["python", "main.py"]
+
+
+
