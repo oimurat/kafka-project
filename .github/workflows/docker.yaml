@@ -28,7 +28,6 @@ jobs:
 
             - name: Docker format
               run: |
-                  curl -fsSL https://dprint.dev/install.sh | sh -s  > /dev/null 2>&1
+                  curl -fsSL https://dprint.dev/install.sh | sh -s -- -b ~/.dprint/bin > /dev/null 2>&1
                   echo "/home/runner/.dprint/bin" >> $GITHUB_PATH
-                  ~/.dprint/bin/dprint check
-                  ~/.dprint/bin/dprint fmt
+                  ~/.dprint/bin/dprint fmt --check
