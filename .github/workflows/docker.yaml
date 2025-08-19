@@ -30,4 +30,10 @@ jobs:
               run: |
                   curl -fsSL https://dprint.dev/install.sh | sh -s -- -b ~/.dprint/bin > /dev/null 2>&1
                   echo "/home/runner/.dprint/bin" >> $GITHUB_PATH
-                  ~/.dprint/bin/dprint fmt --check
+                  ~/.dprint/bin/dprint fmt
+
+            - name: Commit add dprint
+              uses: stefanzweifel/git-auto-commit-action@v6
+              with:
+                  commit_message: "add:dprint"
+                  file_pattern: "**/Dockerfile"
