@@ -11,6 +11,9 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v4
 
+            - name: Docker format
+              uses: dprint/check@v2.3
+
             - name: Docker lint
               uses: hadolint/hadolint-action@v3.1.0
               with:
